@@ -10,6 +10,6 @@
 
 6. Add styling.
 
-8. Optional: Add a 'loading' component that displays from the time the form is submitted until the info comes back from the API.
+Optional: Add a 'loading' component that displays from the time the form is submitted until the info comes back from the API.
 
-8. Push to GitHub.
+7. Push to GitHub.
