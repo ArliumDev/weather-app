@@ -1,15 +1,70 @@
-// Fetch data
-
-fetch('data.json')
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => {
-    console.error('Error al cargar el JSON:', error);
-  });
-
-// DOM
+// DOM Elements
 
 const forecastDisplay = document.querySelector('#forecast-display');
+
+// Fetch data
+
+async function loadData() {
+  try {
+    const response = await fetch('data.json');
+    const data = await response.json();
+
+    const retrievedData = data.days.map((day) => {
+      return {
+        datetime: day.datetime,
+        conditions: day.conditions,
+        summary: day.description,
+        feels_like: day.feelslike,
+        humidity: day.humidity,
+        icon: day.icon,
+        sunrise: day.sunrise,
+        sunset: day.sunset,
+        av_temp: day.temp,
+        max_temp: day.tempmax,
+        min_temp: day.tempmin,
+        uv: day.uvindex,
+      };
+    });
+    console.log(retrievedData);
+    return retrievedData;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+loadData();
+
+// Display data
+
+async function displayForecast() {
+  const data = await loadData();
+  forecastDisplay.innerHTML = '';
+  const location = document.createElement("div");
+  location.classList.add("location");
+  location.innerHTML = `<strong>Location: </strong>Las Palmas`;
+  forecastDisplay.appendChild(location);
+  data.forEach((day) => {
+    const dayCard = document.createElement('div');
+    dayCard.classList.add('day-card');
+    dayCard.innerHTML = `
+    <strong>Day: </strong>${reverseString(day.datetime)}<br>
+    <strong>Conditions: </strong>${day.conditions}<br>
+    <strong>Summary: </strong>${day.summary}<br>
+    <strong>Feels like: </strong>${day.feels_like}ºC<br>
+    <strong>Humidity: </strong>${day.humidity}%<br>
+    <strong>Icon: </strong>${getWeatherIcon(day.icon)}<br>
+    <strong>Sunrise: </strong>${deleteSeconds(day.sunrise)}h<br>
+    <strong>Sunset: </strong>${deleteSeconds(day.sunset)}h<br>
+    <strong>Average temp: </strong>${day.av_temp}ºC<br>
+    <strong>Max temp: </strong>${day.max_temp}ºC<br>
+    <strong>Min temp: </strong>${day.min_temp}ºC<br>
+    <strong>UV: </strong>${day.uv}
+    `;
+    forecastDisplay.appendChild(dayCard);
+  });
+}
+
+displayForecast();
 
 // Data format
 
