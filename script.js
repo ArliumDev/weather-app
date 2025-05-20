@@ -34,17 +34,17 @@ async function resolveJSON(city) {
     const response = await getWeatherData(city);
     const forecast = response.days.map((day) => {
       return {
-        fecha: reverseString(day.datetime),
-        condiciones: day.conditions,
-        descripcion: day.description,
-        sensacion_termica: day.feelslike,
-        humedad: day.humidity,
-        icono: day.icon,
-        amanecer: day.sunrise,
-        atardecer: day.sunset,
-        temp_media: day.temp,
-        temp_max: day.tempmax,
-        temp_min: day.tempmin,
+        date: reverseString(day.datetime),
+        conditions: day.conditions,
+        summary: day.description,
+        feels_like: day.feelslike,
+        humidity: day.humidity,
+        icon: day.icon,
+        sunrise: day.sunrise,
+        sunset: day.sunset,
+        av_temp: day.temp,
+        max_temp: day.tempmax,
+        min_temp: day.tempmin,
         uv: day.uvindex,
       };
     });
@@ -62,23 +62,26 @@ async function display(city) {
   const data = await resolveJSON(city);
   if (!data) return;
   forecastDisplay.textContent = '';
-
+  const locationDiv = document.createElement('div');
+  locationDiv.classList.add('location-display');
+  locationDiv.innerHTML = `<strong>Location: </strong>${city}`;
+  forecastDisplay.appendChild(locationDiv);
   data.forEach((day) => {
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('forecast-day');
     dayDiv.innerHTML = `
-    <strong>${day.fecha}</strong><br>
-    Condiciones: ${day.condiciones}<br>
-    Descripción: ${day.descripcion}<br>
-    Sensación térmica: ${day.sensacion_termica}<br>
-    Humedad: ${day.humedad}<br>
-    Icono: ${day.icono}<br>
-    Amanecer: ${day.amanecer}<br>
-    Atardecer: ${day.atardecer}<br>
-    Temperatura media: ${day.temp_media}<br>
-    Temperatura máxima: ${day.temp_max}<br>
-    Temperatura mínima: ${day.temp_min}<br>
-    Índice UV: ${day.uv}<br>
+    <strong>${day.date}</strong><br>
+    <strong>Conditions:</strong> ${day.conditions}<br>
+    <strong>Summary:</strong> ${day.summary}<br>
+    <strong>Feels like:</strong> ${day.feels_like}ºC<br>
+    <strong>Humidity:</strong> ${day.humidity}%<br>
+    <strong>Icon:</strong> ${getWeatherIcon(day.icon)}<br>
+    <strong>Sunrise:</strong> ${deleteSeconds(day.sunrise)}h<br>
+    <strong>Sunset:</strong> ${deleteSeconds(day.sunset)}h<br>
+    <strong>Average temp:</strong> ${day.av_temp}ºC<br>
+    <strong>Max temp:</strong> ${day.max_temp}ºC<br>
+    <strong>Min temp:</strong> ${day.min_temp}ºC<br>
+    <strong>UV:</strong> ${day.uv}<br>
     `;
     forecastDisplay.appendChild(dayDiv);
   });
@@ -92,3 +95,33 @@ function reverseString(str) {
   const joinArr = reverseArr.join('-');
   return joinArr;
 }
+
+function deleteSeconds(hour) {
+  const formatHour = hour.slice(0, 5);
+  return formatHour;
+}
+
+function getWeatherIcon(str) {
+  return iconMap[str] || '❔';
+}
+
+// Icon mapping
+
+const iconMap = {
+  'clear-day': '☀️',
+  'clear-night': '🌙',
+  'partly-cloudy-day': '🌤️',
+  'partly-cloudy-night': '🌥️',
+  cloudy: '☁️',
+  rain: '🌧️',
+  snow: '❄️',
+  sleet: '🌨️',
+  wind: '🌬️',
+  fog: '🌫️',
+  'showers-day': '🌦️',
+  'showers-night': '🌧️',
+  'thunder-rain': '⛈️',
+  'thunder-showers-day': '⛈️',
+  'thunder-showers-night': '⛈️',
+  hail: '🌨️',
+};
