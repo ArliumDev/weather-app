@@ -125,3 +125,6 @@ const iconMap = {
   'thunder-showers-night': '⛈️',
   hail: '🌨️',
 };
+
+
+// Este es el commit correcto
